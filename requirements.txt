@@ -1,0 +1,9 @@
+Flask
+SQLAlchemy
+Flask-SQLAlchemy
+Flask-Login
+psycopg2-binary
+requests
+pandas
+Flask-Cors
+werkzeug

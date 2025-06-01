@@ -1,0 +1,194 @@
+{% include 'layout/header_dashboard.html' %}
+
+<body class="bg-body-primary">
+    {% include 'layout/nav.html' %}
+    <div class="container-fluid bg-body-secondary" >
+        <div class="card">
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-dollar-sign"></i>
+                        <div>
+                            <div class="metric" id="totalSales">0.00M</div>
+                            <span class="variation" id="totalSalesVar"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-gamepad"></i>
+                        <div>
+                            <div class="metric" id="leadingPlatform">N/A</div>
+                            <span class="variation">Plataforma Líder</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-tags"></i>
+                        <div>
+                            <div class="metric" id="popularGenre">N/A</div>
+                            <span class="variation">Género Popular</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-calendar"></i>
+                        <div>
+                            <div class="metric" id="topYear">N/A</div>
+                            <span class="variation" id="topYearVar"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <details class="mb-4">
+                <summary class="h5 text-primary"><i class="fas fa-filter me-2"></i>Filtros de visualización</summary>
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <label for="filterPlataforma" class="form-label">Plataformas:</label>
+                        <select id="filterPlataforma" class="form-select" multiple>
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterGenero" class="form-label">Géneros:</label>
+                        <select id="filterGenero" class="form-select" multiple>
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterAnio" class="form-label">Años:</label>
+                        <select id="filterAnio" class="form-select" multiple>
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterEditor" class="form-label">Editores:</label>
+                        <select id="filterEditor" class="form-select" multiple>
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Tabla de datos -->
+            <details class="mb-4">
+                <summary class="h5 text-primary"><i class="fas fa-table me-2"></i>Ver tabla de datos</summary>
+                <div class="mt-3 table-responsive">
+                    <table id="tablaDatos" class="table table-striped" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Plataforma</th>
+                                <th>Año</th>
+                                <th>Género</th>
+                                <th>Editor</th>
+                                <th>Ventas NA</th>
+                                <th>Ventas EU</th>
+                                <th>Ventas JP</th>
+                                <th>Ventas Otros</th>
+                                <th>Ventas Globales</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </details>
+
+            <div class="card">
+                <ul class="nav nav-tabs" id="chartTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="plataforma-region-tab" data-bs-toggle="tab" data-bs-target="#plataforma-region" type="button" role="tab">Plataforma y Región</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="genero-generoAnio-tab" data-bs-toggle="tab" data-bs-target="#genero-generoAnio" type="button" role="tab">Género y Género por Año</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="anio-radar-tab" data-bs-toggle="tab" data-bs-target="#anio-radar" type="button" role="tab">Año y Radar</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="editor-titulos-tab" data-bs-toggle="tab" data-bs-target="#editor-titulos" type="button" role="tab">Editor y Títulos</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="titulosAnio-editorRegion-tab" data-bs-toggle="tab" data-bs-target="#titulosAnio-editorRegion" type="button" role="tab">Títulos por Año y Editor por Región</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="chartTabContent">
+                    <!-- Plataforma y Región -->
+                    <div class="tab-pane fade show active" id="plataforma-region" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <canvas id="ventasPorPlataforma"></canvas>
+                            </div>
+                            <div class="col-md-6">
+                                <canvas id="ventasPorRegion"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Género y Género por Año -->
+                    <div class="tab-pane fade" id="genero-generoAnio" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <canvas id="ventasPorGenero"></canvas>
+                            </div>
+                            <div class="col-md-6">
+                                <canvas id="ventasGeneroPorAnio"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Año y Radar -->
+                    <div class="tab-pane fade" id="anio-radar" role="tabpanel">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-primary period-btn active" data-period="all">Todos</button>
+                                    <button class="btn btn-outline-primary period-btn" data-period="last5">Últimos 5 Años</button>
+                                    <button class="btn btn-outline-primary period-btn" data-period="last">Último Año</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <canvas id="ventasPorAnio"></canvas>
+                            </div>
+                            <div class="col-md-6">
+                                <canvas id="graficoRadar"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Editor y Títulos -->
+                    <div class="tab-pane fade" id="editor-titulos" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <canvas id="ventasPorEditor"></canvas>
+                            </div>
+                            <div class="col-md-6">
+                                <canvas id="ventasTopTitulos"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Títulos por Año y Editor por Región -->
+                    <div class="tab-pane fade" id="titulosAnio-editorRegion" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <canvas id="ventasPorTituloAnio"></canvas>
+                            </div>
+                            <div class="col-md-6">
+                                <canvas id="ventasPorEditorRegion"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Scripts -->
+         {% include 'layout/scripts.html' %}
+         <script src="{{ url_for('static', filename='js/dashboard.js') }}?v=3.0.0"></script>
+    </div>
+</body>
+{% include 'layout/footer_dashboard.html' %}
+</html>
