@@ -70,13 +70,13 @@ def logout():
     return redirect(url_for('auth'))
 
 #### Creacion y llamada ala BD
-@app.route('/api/video_games')
-def api_video_games():
+@app.route('/api/videogames')
+def api_videogames():
     print("API LLEGAMOS")
-    video_games = db_session.query(VideoGameSale).all()
-    ##print(video_games)
+    videogames = db_session.query(VideoGameSale).all()
+    ##print(videogames)
     juegos=[]
-    for juego in video_games:
+    for juego in videogames:
         juegos.append({
             "Name":juego.name,
             "Platform":juego.platform,
@@ -133,8 +133,8 @@ def listgames():
 
 ###### CRUD
 
-@app.route('/api/list_video_games')
-def api_list_video_games():
+@app.route('/api/list_videogames')
+def api_list_videogames():
     data = db_session.query(VideoGameSale).all()
     
     juegos = []
@@ -172,7 +172,7 @@ def obtener_opciones():
     })
 
 #### Agregar Videojuego
-@app.route('/add/video_games', methods=['POST'])
+@app.route('/add/videogames', methods=['POST'])
 def crear_videojuego():
     data = request.json
     nuevo = VideoGameSale(
@@ -192,7 +192,7 @@ def crear_videojuego():
     db_session.commit()
     return jsonify({"mensaje": "Videojuego agregado correctamente"})
 
-@app.route('/del/video_games/<int:id>', methods=['DELETE'])
+@app.route('/del/videogames/<int:id>', methods=['DELETE'])
 def eliminar_videojuego(id):
     videojuego = db_session.query(VideoGameSale).get(id)
     if videojuego:
@@ -202,7 +202,7 @@ def eliminar_videojuego(id):
     return jsonify({"error": "Videojuego no encontrado"}), 404
 
 
-@app.route('/upd/video_games/<int:id>', methods=['PUT'])
+@app.route('/upd/videogames/<int:id>', methods=['PUT'])
 def actualizar_videojuego(id):
     data = request.json
     juego = db_session.query(VideoGameSale).get(id)

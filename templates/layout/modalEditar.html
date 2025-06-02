@@ -1,0 +1,68 @@
+<!-- Modal Editar Videojuego -->
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="formEditar">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="modalEditarLabel">Editar Videojuego</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body row g-3">
+                    <input type="hidden" name="id" id="editarId">
+                    <div class="col-md-3">
+                        <label class="form-label">Rank</label>
+                        <input type="number" name="rank" id="editarRank" class="form-control" required>
+                    </div>
+                    <div class="col-md-9">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" name="name" id="editarName" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Plataforma</label>
+
+                        <select name="platform" id="editarPlatform" class="form-select"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Año</label>
+
+                        <select name="year" id="editarYear" class="form-select"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Género</label>
+
+                        <select name="genre" id="editarGenre" class="form-select"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Editor</label>
+
+                        <select name="publisher" id="editarPublisher" class="form-select"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Ventas NA</label>
+                        <input type="number" step="0.01" name="na_sales" id="editarNa" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Ventas EU</label>
+                        <input type="number" step="0.01" name="eu_sales" id="editarEu" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Ventas JP</label>
+                        <input type="number" step="0.01" name="jp_sales" id="editarJp" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Ventas Otros</label>
+                        <input type="number" step="0.01" name="other_sales" id="editarOtros" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Ventas Globales</label>
+                        <input type="number" step="0.01" name="global_sales" id="editarGlobal" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

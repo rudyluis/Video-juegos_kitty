@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
     $.ajax({
-        url: "/api/list_video_games",
+        url: "/api/list_videogames",
         method: "GET",
         dataType: "json",
         success: function (data) {
@@ -119,7 +119,7 @@ $('#formAgregar').on('submit', function (e) {
     };
 
     $.ajax({
-        url: '/add/video_games',
+        url: '/add/videogames',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(datos),
@@ -141,7 +141,7 @@ $('#formAgregar').on('submit', function (e) {
 function cargarDatos() {
     $('#loader').removeClass('d-none');
     $.ajax({
-        url: "/api/list_video_games",
+        url: "/api/list_videogames",
         method: "GET",
         dataType: "json",
         success: function (data) {
@@ -177,7 +177,7 @@ $('#tablaJuegos').on('click', '.btn-eliminar', function () {
     const id = $(this).data('id');
     if (confirm("¿Estás seguro de eliminar este registro?")) {
         $.ajax({
-            url: `/del/video_games/${id}`,
+            url: `/del/videogames/${id}`,
             method: 'DELETE',
             success: function () {
                 mostrarToast('❌ Registro eliminado', 'danger');
@@ -234,7 +234,7 @@ $('#formEditar').on('submit', function (e) {
     };
 
     $.ajax({
-        url: `/upd/video_games/${id}`,
+        url: `/upd/videogames/${id}`,
         method: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(datos),

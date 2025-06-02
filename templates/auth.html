@@ -1,89 +1,804 @@
 {% extends 'layout/base.html' %}
 
-{% block title %}Login / Registro{% endblock %}
+{% block title %}Sistema de Jugadores{% endblock %}
 
 {% block content %}
-<main class="main-content mt-0">
-  <div class="page-header align-items-start min-vh-100" style="background-image: url('https://i.pinimg.com/originals/47/53/d7/4753d776ae8b2e1bd3ba05289ad27f8b.gif');">
-    <span class="mask bg-gradient-dark opacity-6"></span>
-    <div class="container my-auto">
-      <div class="row">
-        <div class="col-lg-4 col-md-7 mx-auto">
-          <div class="card z-index-0 fadeIn3 fadeInBottom">
-            <div class="card-header text-center pt-4">
-              <h5>Iniciar Sesion / Nuevo jugador</h5>
-            </div>
-            <div class="card-body">
-              <!-- Tabs -->
-              <ul class="nav nav-tabs nav-fill mb-3" id="authTab" role="tablist">
-                <li class="nav-item">
-                  <a class="nav-link active" id="login-tab" data-bs-toggle="tab" href="#login" role="tab">Iniciar sesión</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" id="register-tab" data-bs-toggle="tab" href="#register" role="tab">Nuevo Jugador</a>
-                </li>
-              </ul>
+<main class="main-content">
+  <div class="auth-container">
+    <!-- Efecto de partículas -->
+    <div id="particles-js"></div>
+    
+    <div class="auth-card neon-card">
+      <div class="auth-header">
+        <div class="game-icon">
+          <i class="fas fa-gamepad"></i>
+        </div>
+        <h1 class="retro-title glitch" data-text="Venta de VideoJuegos">Venta de VideoJuegos</h1>
+        <p class="auth-subtitle">Llena tus datos para iniciar tu partida</p>
+      </div>
+      
+      <!-- Pestañas -->
+      <div class="auth-tabs">
+        <div class="tab-buttons">
+          <button id="login-tab-btn" class="tab-button active" onclick="switchTab('login')">
+            <i class="fas fa-sign-in-alt"></i> Cargar Partida
+          </button>
+          <button id="register-tab-btn" class="tab-button" onclick="switchTab('register')">
+            <i class="fas fa-user-plus"></i> Nuevo Jugador
+          </button>
+        </div>
+      </div>
 
-                            <!-- Flash messages -->
-              <!-- Flash messages -->
-              {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                {% for category, message in messages %}
-                  <div class="alert alert-{{ category }} alert-dismissible fade show text-black text-sm" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close">X</button>
-                  </div>
-                {% endfor %}
-              {% endif %}
-              {% endwith %}
-
-              <!-- Tab Content -->
-              <div class="tab-content">
-                <!-- Login Form -->
-                <div class="tab-pane fade show active" id="login" role="tabpanel">
-                  <form method="POST" action="{{ url_for('auth') }}">
-                    <input type="hidden" name="action" value="login">
-                    <div class="input-group input-group-outline my-3">
-                      <label class="form-label">Usuario</label>
-                      <input type="text" class="form-control" name="username" placeholder="Usuario"  required>
-                    </div>
-                    <div class="input-group input-group-outline mb-3">
-                      <label class="form-label">Contraseña</label>
-                      <input type="password" class="form-control" name="password" placeholder="Contraseña" required>
-                    </div>
-                    <div class="text-center">
-                      <button type="submit" class="btn bg-gradient-primary w-100">Cargar Partida</button>
-                    </div>
-                  </form>
-                </div>
-
-                <!-- Register Form -->
-                <div class="tab-pane fade" id="register" role="tabpanel">
-                  <form method="POST" action="{{ url_for('auth') }}">
-                    <input type="hidden" name="action" value="register">
-                    <div class="input-group input-group-outline my-3">
-                      <label class="form-label">Usuario</label>
-                      <input type="text" class="form-control" name="username" placeholder="Usuario" required>
-                    </div>
-                    <div class="input-group input-group-outline mb-3">
-                      <label class="form-label">Contraseña</label>
-                      <input type="password" class="form-control" name="password" placeholder="Contraseña" required>
-                    </div>
-                    <div class="text-center">
-                      <button type="submit" class="btn bg-gradient-success w-100">Nueva Partida</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-
-            </div>
+      <!-- Flash messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
-          <div class="mt-4 text-white text-center">
-            <small>Creado para Univalle - 2025</small>
-          </div>
+        {% endfor %}
+      {% endif %}
+      {% endwith %}
+
+      <!-- Contenido de las pestañas -->
+      <div class="tab-content">
+        <!-- Login Form -->
+        <div id="login-tab-content" class="tab-pane active">
+          <form method="POST" action="{{ url_for('auth') }}" class="auth-form">
+            <input type="hidden" name="action" value="login">
+            <div class="form-group neon-input">
+              <i class="fas fa-user input-icon"></i>
+              <input type="text" class="form-control" name="username" placeholder="NICKNAME" required>
+              <span class="input-highlight"></span>
+            </div>
+            <div class="form-group neon-input">
+              <i class="fas fa-lock input-icon"></i>
+              <input type="password" class="form-control" name="password" placeholder="CLAVE" required>
+              <span class="input-highlight"></span>
+            </div>
+            <button type="submit" class="auth-button login-button">
+              <i class="fas fa-play"></i> INICIAR PARTIDA
+            </button>
+          </form>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-tab-content" class="tab-pane">
+          <form method="POST" action="{{ url_for('auth') }}" class="auth-form">
+            <input type="hidden" name="action" value="register">
+            <div class="form-group neon-input">
+              <i class="fas fa-user input-icon"></i>
+              <input type="text" class="form-control" name="username" placeholder="NUEVO USUARIO" required>
+              <span class="input-highlight"></span>
+            </div>
+            <div class="form-group neon-input">
+              <i class="fas fa-lock input-icon"></i>
+              <input type="password" class="form-control" name="password" placeholder="CLAVE" required>
+              <span class="input-highlight"></span>
+            </div>
+            <div class="form-group neon-input">
+              <i class="fas fa-lock input-icon"></i>
+              <input type="password" class="form-control" name="confirm_password" placeholder="CONFIRMAR CLAVE" required>
+              <span class="input-highlight"></span>
+            </div>
+            <button type="submit" class="auth-button register-button">
+              <i class="fas fa-user-plus"></i> REGISTRAR JUGADOR
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="auth-footer">
+        <div class="copyright">
+          <p>UNIVALLE © 2025 - SISTEMA DE JUGADORES</p>
         </div>
       </div>
     </div>
   </div>
 </main>
+
+<style>
+  /* Importar fuente Press Start 2P */
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+  
+  /* Estilos base */
+  :root {
+    --primary-color: #FF6B6B;
+    --primary-light: #FF8787;
+    --primary-dark: #FA5252;
+    --secondary-color: #4ECDC4;
+    --accent-color: #FFE66D;
+    --dark-bg: #111827;
+    --dark-card: #1F2937;
+    --light-bg: #F8F9FA;
+    --light-card: #FFFFFF;
+    --text-dark: #333;
+    --text-light: #F3F4F6;
+    --neon-shadow: 0 0 10px rgba(255, 107, 107, 0.7);
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  /* Contenedor principal */
+  .auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: url('https://i.pinimg.com/originals/47/53/d7/4753d776ae8b2e1bd3ba05289ad27f8b.gif') no-repeat center center;
+    background-size: cover;
+    padding: 2rem;
+    font-family: 'Press Start 2P', cursive;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Efecto de partículas */
+  #particles-js {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+  }
+
+  /* Tarjeta de autenticación */
+  .auth-card {
+    background: rgba(31, 41, 55, 0.9);
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 450px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--primary-color);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transform: perspective(1000px) rotateY(0deg);
+    transition: transform 0.5s ease;
+  }
+
+  .auth-card:hover {
+    transform: perspective(1000px) rotateY(5deg);
+  }
+
+  .neon-card {
+    animation: neonGlow 2s infinite alternate;
+  }
+
+  @keyframes neonGlow {
+    from {
+      box-shadow: 0 0 5px rgba(255, 107, 107, 0.5),
+                   0 0 10px rgba(255, 107, 107, 0.3),
+                   0 0 20px rgba(255, 107, 107, 0.1);
+    }
+    to {
+      box-shadow: 0 0 15px rgba(255, 107, 107, 0.7),
+                   0 0 30px rgba(255, 107, 107, 0.5),
+                   0 0 45px rgba(255, 107, 107, 0.3);
+    }
+  }
+
+  /* Encabezado */
+  .auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .game-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px var(--primary-light);
+    animation: pulse 2s infinite, float 6s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+
+  /* Efecto Glitch en el título */
+  .glitch {
+    position: relative;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0 var(--primary-dark);
+    animation: glitch-skew 1s infinite linear alternate-reverse;
+  }
+
+  .glitch::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    left: 2px;
+    text-shadow: -2px 0 #4ECDC4;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
+  }
+
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    left: -2px;
+    text-shadow: -2px 0 #FFE66D;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim2 5s infinite linear alternate-reverse;
+  }
+
+  @keyframes glitch-anim {
+    0% { clip: rect(31px, 9999px, 94px, 0); }
+    10% { clip: rect(112px, 9999px, 76px, 0); }
+    20% { clip: rect(85px, 9999px, 77px, 0); }
+    30% { clip: rect(27px, 9999px, 97px, 0); }
+    40% { clip: rect(64px, 9999px, 98px, 0); }
+    50% { clip: rect(61px, 9999px, 85px, 0); }
+    60% { clip: rect(99px, 9999px, 114px, 0); }
+    70% { clip: rect(34px, 9999px, 115px, 0); }
+    80% { clip: rect(98px, 9999px, 129px, 0); }
+    90% { clip: rect(43px, 9999px, 96px, 0); }
+    100% { clip: rect(82px, 9999px, 64px, 0); }
+  }
+
+  @keyframes glitch-anim2 {
+    0% { clip: rect(65px, 9999px, 119px, 0); }
+    10% { clip: rect(79px, 9999px, 66px, 0); }
+    20% { clip: rect(26px, 9999px, 78px, 0); }
+    30% { clip: rect(75px, 9999px, 107px, 0); }
+    40% { clip: rect(58px, 9999px, 129px, 0); }
+    50% { clip: rect(73px, 9999px, 54px, 0); }
+    60% { clip: rect(105px, 9999px, 138px, 0); }
+    70% { clip: rect(15px, 9999px, 75px, 0); }
+    80% { clip: rect(66px, 9999px, 39px, 0); }
+    90% { clip: rect(129px, 9999px, 137px, 0); }
+    100% { clip: rect(34px, 9999px, 14px, 0); }
+  }
+
+  @keyframes glitch-skew {
+    0% { transform: skew(0deg); }
+    10% { transform: skew(-3deg); }
+    20% { transform: skew(1deg); }
+    30% { transform: skew(-4deg); }
+    40% { transform: skew(2deg); }
+    50% { transform: skew(-1deg); }
+    60% { transform: skew(3deg); }
+    70% { transform: skew(-2deg); }
+    80% { transform: skew(4deg); }
+    90% { transform: skew(-1deg); }
+    100% { transform: skew(0deg); }
+  }
+
+  .auth-subtitle {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    opacity: 0.8;
+    font-family: 'Press Start 2P', cursive;
+    animation: flicker 4s infinite alternate;
+  }
+
+  @keyframes flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+      opacity: 0.8;
+    }
+    20%, 24%, 55% {
+      opacity: 0.2;
+    }
+  }
+
+  /* Pestañas */
+  .tab-buttons {
+    display: flex;
+    margin-bottom: 1.5rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+
+  .tab-button {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    background: transparent;
+    color: var(--text-light);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tab-button::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--primary-color);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+  }
+
+  .tab-button:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .tab-button.active {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+  }
+
+  .tab-button.active::before {
+    display: none;
+  }
+
+  .tab-button:not(.active):hover {
+    background: rgba(255, 107, 107, 0.2);
+  }
+
+  /* Formularios */
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    position: relative;
+  }
+
+  .neon-input {
+    position: relative;
+  }
+
+  .neon-input input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 2.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 2px solid transparent;
+    border-radius: 0.5rem;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    transition: var(--transition);
+    font-family: 'Press Start 2P', cursive;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .neon-input input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.5),
+                inset 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .neon-input input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.7rem;
+    font-family: 'Press Start 2P', cursive;
+    transition: all 0.3s ease;
+  }
+
+  .neon-input input:focus::placeholder {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+  }
+
+  .neon-input input:focus ~ .input-icon {
+    color: var(--accent-color);
+    transform: translateY(-50%) scale(1.2);
+  }
+
+  .input-highlight {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--accent-color);
+    transition: width 0.4s ease;
+  }
+
+  .neon-input input:focus ~ .input-highlight {
+    width: 100%;
+  }
+
+  /* Botones */
+  .auth-button {
+    padding: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.8rem;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .auth-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 50%, transparent 75%);
+    background-size: 400% 400%;
+    z-index: -1;
+    transition: background-position 0.5s ease;
+  }
+
+  .auth-button:hover::before {
+    background-position: 100% 100%;
+    animation: shine 1.5s infinite;
+  }
+
+  @keyframes shine {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+  }
+
+  .login-button {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+  }
+
+  .login-button:hover {
+    background: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+  }
+
+  .register-button {
+    background: var(--secondary-color);
+    color: var(--text-dark);
+    box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);
+  }
+
+  .register-button:hover {
+    background: #5FE0D6;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(78, 205, 196, 0.6);
+  }
+
+  /* Efecto de tecleo en los botones */
+  .auth-button::after {
+    content: '>';
+    position: absolute;
+    right: -20px;
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+
+  .auth-button:hover::after {
+    right: 15px;
+    opacity: 1;
+  }
+
+  /* Alertas */
+  .alert {
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    font-family: 'Press Start 2P', cursive;
+    animation: slideIn 0.5s ease-out;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .alert::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: rgba(255,255,255,0.5);
+    animation: alertGlow 2s infinite;
+  }
+
+  @keyframes alertGlow {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+  }
+
+  @keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .alert-success {
+    background: rgba(46, 213, 115, 0.2);
+    color: #2ED573;
+    border: 1px solid #2ED573;
+  }
+
+  .alert-danger {
+    background: rgba(255, 71, 87, 0.2);
+    color: #FF4757;
+    border: 1px solid #FF4757;
+  }
+
+  .btn-close {
+    filter: invert(1);
+  }
+
+  /* Footer */
+  .auth-footer {
+    margin-top: 2rem;
+  }
+
+  .copyright {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.6rem;
+    margin-top: 1rem;
+    font-family: 'Press Start 2P', cursive;
+    position: relative;
+  }
+
+  .copyright::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+  }
+
+  /* Ocultar pestañas no activas */
+  .tab-pane {
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .tab-pane.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 576px) {
+    .auth-card {
+      padding: 1.5rem;
+    }
+    
+    .retro-title {
+      font-size: 1.2rem;
+    }
+    
+    .tab-button {
+      font-size: 0.6rem;
+      padding: 0.75rem;
+    }
+    
+    .auth-button {
+      font-size: 0.7rem;
+    }
+    
+    .neon-input input::placeholder {
+      font-size: 0.6rem;
+    }
+  }
+</style>
+
+<!-- Librería de partículas -->
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+<script>
+  function switchTab(tabName) {
+    // Ocultar todos los contenidos de pestañas
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+      pane.classList.remove('active');
+    });
+    
+    // Mostrar solo el contenido seleccionado
+    document.getElementById(tabName + '-tab-content').classList.add('active');
+    
+    // Actualizar estilos de los botones de pestaña
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    
+    document.getElementById(tabName + '-tab-btn').classList.add('active');
+  }
+
+  // Inicializar partículas
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof particlesJS !== 'undefined') {
+      particlesJS('particles-js', {
+        "particles": {
+          "number": {
+            "value": 80,
+            "density": {
+              "enable": true,
+              "value_area": 800
+            }
+          },
+          "color": {
+            "value": "#FF6B6B"
+          },
+          "shape": {
+            "type": "circle",
+            "stroke": {
+              "width": 0,
+              "color": "#000000"
+            },
+            "polygon": {
+              "nb_sides": 5
+            }
+          },
+          "opacity": {
+            "value": 0.5,
+            "random": false,
+            "anim": {
+              "enable": false,
+              "speed": 1,
+              "opacity_min": 0.1,
+              "sync": false
+            }
+          },
+          "size": {
+            "value": 3,
+            "random": true,
+            "anim": {
+              "enable": false,
+              "speed": 40,
+              "size_min": 0.1,
+              "sync": false
+            }
+          },
+          "line_linked": {
+            "enable": true,
+            "distance": 150,
+            "color": "#FF6B6B",
+            "opacity": 0.4,
+            "width": 1
+          },
+          "move": {
+            "enable": true,
+            "speed": 2,
+            "direction": "none",
+            "random": false,
+            "straight": false,
+            "out_mode": "out",
+            "bounce": false,
+            "attract": {
+              "enable": false,
+              "rotateX": 600,
+              "rotateY": 1200
+            }
+          }
+        },
+        "interactivity": {
+          "detect_on": "canvas",
+          "events": {
+            "onhover": {
+              "enable": true,
+              "mode": "grab"
+            },
+            "onclick": {
+              "enable": true,
+              "mode": "push"
+            },
+            "resize": true
+          },
+          "modes": {
+            "grab": {
+              "distance": 140,
+              "line_linked": {
+                "opacity": 1
+              }
+            },
+            "bubble": {
+              "distance": 400,
+              "size": 40,
+              "duration": 2,
+              "opacity": 8,
+              "speed": 3
+            },
+            "repulse": {
+              "distance": 200,
+              "duration": 0.4
+            },
+            "push": {
+              "particles_nb": 4
+            },
+            "remove": {
+              "particles_nb": 2
+            }
+          }
+        },
+        "retina_detect": true
+      });
+    }
+    
+    // Efecto de máquina de escribir en los placeholders
+    const inputs = document.querySelectorAll('.neon-input input');
+    inputs.forEach(input => {
+      const placeholder = input.getAttribute('placeholder');
+      input.setAttribute('placeholder', '');
+      let i = 0;
+      
+      const typeWriter = setInterval(() => {
+        if (i < placeholder.length) {
+          input.setAttribute('placeholder', input.getAttribute('placeholder') + placeholder.charAt(i));
+          i++;
+        } else {
+          clearInterval(typeWriter);
+        }
+      }, 100);
+    });
+    
+    // Efecto hover 3D en la tarjeta
+    const card = document.querySelector('.auth-card');
+    card.addEventListener('mousemove', (e) => {
+      const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+      const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+      card.style.transform = `perspective(1000px) rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+    });
+    
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
+    });
+  });
+</script>
 {% endblock %}

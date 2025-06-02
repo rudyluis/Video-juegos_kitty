@@ -1,0 +1,691 @@
+{% include 'layout/header_dashboard.html' %}
+
+<body class="bg-body-primary">
+    {% include 'layout/nav.html' %}
+    
+    <!-- Botón de tema oscuro -->
+    <div class="position-absolute top-0 end-0 mt-3 me-3">
+        <button id="themeToggle" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-moon"></i> Modo Oscuro
+        </button>
+    </div>
+    
+    <div class="container-fluid bg-body-secondary">
+        <!-- Efecto de partículas -->
+        <div id="dashboard-particles"></div>
+        
+        <div class="dashboard-container">
+            <!-- Stats Cards -->
+            <div class="row mb-4 stats-row">
+                <div class="col-md-3">
+                    <div class="stats-card neon-stats" data-aos="fade-up" data-aos-delay="100">
+                        <div class="stats-icon">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <div class="stats-content">
+                            <div class="metric" id="totalJuegos">0</div>
+                            <span class="variation">Total de Juegos</span>
+                        </div>
+                        <div class="stats-wave"></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card neon-stats" data-aos="fade-up" data-aos-delay="200">
+                        <div class="stats-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="stats-content">
+                            <div class="metric" id="totalGeneros">0</div>
+                            <span class="variation">Géneros Únicos</span>
+                        </div>
+                        <div class="stats-wave"></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card neon-stats" data-aos="fade-up" data-aos-delay="300">
+                        <div class="stats-icon">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                        <div class="stats-content">
+                            <div class="metric" id="totalPlataformas">0</div>
+                            <span class="variation">Plataformas</span>
+                        </div>
+                        <div class="stats-wave"></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card neon-stats" data-aos="fade-up" data-aos-delay="400">
+                        <div class="stats-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stats-content">
+                            <div class="metric" id="ventasGlobales">0.00M</div>
+                            <span class="variation">Ventas Globales</span>
+                        </div>
+                        <div class="stats-wave"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de datos -->
+            {% include 'layout/modalAgregar.html' %}
+            {% include 'layout/modalEditar.html' %}
+            <details class="mb-4">
+                <summary class="h5 text-primary"><i class="fas fa-table me-2"></i>Ver tabla de datos</summary>
+                <div class="mt-3 table-responsive">
+                    <table id="tablaJuegos" class="table table-striped" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Título</th>
+                                <th>Plataforma</th>
+                                <th>Año</th>
+                                <th>Género</th>
+                                <th>Editor</th>
+                                <th>Ventas NA</th>
+                                <th>Ventas EU</th>
+                                <th>Ventas JP</th>
+                                <th>Ventas Otros</th>
+                                <th>Ventas Globales</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </details>
+        </div>
+        {% include 'layout/scripts.html' %}
+        <script src="{{ url_for('static', filename='js/crudgames.js') }}?v=3.0.0"></script>
+
+    </div>
+        
+        <!-- Scripts -->
+        {% include 'layout/scripts.html' %}
+        <!-- AOS Animation Library -->
+        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+        
+        <!-- Estilos personalizados -->
+        <style>
+        :root {
+            --primary-color: #FF6B6B;
+            --primary-light: #FF8787;
+            --primary-dark: #FA5252;
+            --secondary-color: #4ECDC4;
+            --accent-color: #FFE66D;
+            --light-card: #FFFFFF;
+            --dark-card: #1e1e1e;
+            --text-dark: #212529;
+            --text-light: #f8f9fa;
+            --neon-shadow: 0 0 10px rgba(255, 107, 107, 0.7);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* Fondo principal */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://i.pinimg.com/originals/7d/68/ab/7d68abd537942d95ac5b2cbb53ed3cf0.gif') center center fixed;
+            background-size: cover;
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            transition: var(--transition);
+        }
+
+        /* Modo oscuro */
+        body.dark-mode {
+            background: url('https://i.pinimg.com/originals/76/cc/71/76cc71fb45866a23a21ba5124743da4e.gif') center center fixed;
+            background-size: cover;
+            color: var(--text-light);
+        }
+
+        body.dark-mode .bg-body-secondary {
+            background-color: transparent !important;
+        }
+
+        body.dark-mode .neon-card,
+        body.dark-mode .stats-card,
+        body.dark-mode .filter-section,
+        body.dark-mode .chart-container {
+            background-color: rgba(30, 30, 30, 0.85) !important;
+            backdrop-filter: blur(5px);
+        }
+
+        .dashboard-container {
+            position: relative;
+            z-index: 1;
+            padding-top: 20px;
+        }
+
+        /* Tarjetas de estadísticas */
+        .stats-row {
+            margin-top: 1rem;
+        }
+
+        .stats-card {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            box-shadow: 0 4px 15px rgba(201, 201, 201, 0.2);
+            color: var(--text-dark);
+        }
+
+        body.dark-mode .stats-card {
+            background: rgba(45, 45, 45, 0.85) !important;
+            color: var(--text-light);
+        }
+
+        .neon-stats {
+            animation: neonGlow 2s infinite alternate;
+        }
+
+        @keyframes neonGlow {
+            from {
+                box-shadow: 0 0 5px rgba(255, 107, 107, 0.5),
+                            0 0 10px rgba(255, 107, 107, 0.3);
+            }
+            to {
+                box-shadow: 0 0 15px rgba(255, 107, 107, 0.7),
+                            0 0 30px rgba(255, 107, 107, 0.5);
+            }
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        .stats-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px var(--primary-light);
+            animation: pulse 2s infinite;
+        }
+
+        .stats-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .metric {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 5px rgba(255, 230, 109, 0.5);
+        }
+
+        .variation {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            opacity: 0.8;
+            display: block;
+        }
+
+        body.dark-mode .variation {
+            color: var(--text-light);
+        }
+
+        .stats-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(to top, rgba(255, 107, 107, 0.1), transparent);
+            z-index: 1;
+            clip-path: polygon(0 40%, 100% 20%, 100% 100%, 0% 100%);
+            opacity: 0.5;
+            transition: var(--transition);
+        }
+
+        /* Filtros */
+        .filter-section {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border-radius: 1rem;
+            padding: 1rem;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            box-shadow: 0 4px 15px rgba(187, 187, 187, 0.2);
+            color: var(--text-dark);
+        }
+
+        body.dark-mode .filter-section {
+            background: rgba(31, 41, 55, 0.85) !important;
+            color: var(--text-light);
+        }
+
+        .filter-header {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            transition: var(--transition);
+            list-style: none;
+        }
+
+        .filter-header::-webkit-details-marker {
+            display: none;
+        }
+
+        .filter-header:hover {
+            color: var(--accent-color);
+        }
+
+        .filter-arrow {
+            margin-left: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .filter-section[open] .filter-arrow {
+            transform: rotate(180deg);
+        }
+
+        .filter-content {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0);
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        /* Selectores y inputs */
+        .neon-select, .form-control {
+            background: rgba(255, 255, 255, 0.8) !important;
+            border: 1px solid rgba(255, 107, 107, 0.5) !important;
+            color: var(--text-dark) !important;
+            transition: var(--transition);
+        }
+
+        body.dark-mode .neon-select, 
+        body.dark-mode .form-control {
+            color: var(--text-light) !important;
+            background: rgba(100, 100, 100, 0.3) !important;
+        }
+
+        .neon-select:focus, .form-control:focus {
+            border-color: var(--primary-color) !important;
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.5) !important;
+        }
+
+        /* Tabla de datos */
+        .neon-table {
+            background: rgba(255, 255, 255, 0.8) !important;
+            color: var(--text-dark) !important;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        body.dark-mode .neon-table {
+            background: rgba(31, 41, 55, 0.8) !important;
+            color: var(--text-light) !important;
+        }
+
+        .neon-table thead th {
+            background: rgba(255, 107, 107, 0.2) !important;
+            color: var(--accent-color) !important;
+            border-bottom: 2px solid var(--primary-color) !important;
+        }
+
+        .neon-table tbody tr {
+            transition: var(--transition);
+        }
+
+        .neon-table tbody tr:hover {
+            background: rgba(255, 107, 107, 0.1) !important;
+            transform: translateX(5px);
+        }
+
+        /* Botones de acción */
+        .btn-action {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            margin: 0 2px;
+        }
+
+        /* Tarjeta de gráficos */
+        .neon-card {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(255, 107, 107, 0.3) !important;
+            box-shadow: 0 10px 30px rgba(191, 191, 191, 0.3) !important;
+            backdrop-filter: blur(5px);
+            border-radius: 1rem !important;
+            overflow: hidden;
+            transition: var(--transition);
+            color: var(--text-dark);
+        }
+
+        body.dark-mode .neon-card {
+            background: rgba(31, 41, 55, 0.85) !important;
+            color: var(--text-light);
+        }
+
+        .neon-card:hover {
+            box-shadow: 0 15px 35px rgba(255, 107, 107, 0.3) !important;
+        }
+
+        /* Contenedores de gráficos */
+        .chart-container {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border-radius: 0.8rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 107, 107, 0.2);
+            transition: var(--transition);
+            color: var(--text-dark);
+            height: 300px;
+        }
+
+        body.dark-mode .chart-container {
+            background: rgba(31, 41, 55, 0.85) !important;
+            color: var(--text-light);
+        }
+
+        /* Pestañas */
+        .neon-tabs {
+            border-bottom: 1px solid rgba(255, 107, 107, 0.3) !important;
+        }
+
+        .neon-tabs .nav-link {
+            color: var(--text-dark);
+            opacity: 0.7;
+            border: none !important;
+            position: relative;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            padding: 1rem 1.5rem;
+        }
+
+        body.dark-mode .neon-tabs .nav-link {
+            color: var(--text-light);
+        }
+
+        .neon-tabs .nav-link:hover {
+            opacity: 1;
+            color: var(--accent-color);
+        }
+
+        .neon-tabs .nav-link.active {
+            color: var(--primary-color);
+            opacity: 1;
+            background: transparent !important;
+        }
+
+        .neon-tabs .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-color);
+            animation: neonGlow 2s infinite alternate;
+        }
+
+        /* Animaciones */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Efecto glitch */
+        .glitch {
+            position: relative;
+            color: var(--primary-color);
+            animation: glitch-skew 1s infinite linear alternate-reverse;
+        }
+
+        .glitch::before {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            left: 2px;
+            text-shadow: -2px 0 #4ECDC4;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            left: -2px;
+            text-shadow: -2px 0 #FFE66D;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(31px, 9999px, 94px, 0); }
+            10% { clip: rect(112px, 9999px, 76px, 0); }
+            20% { clip: rect(85px, 9999px, 77px, 0); }
+            30% { clip: rect(27px, 9999px, 97px, 0); }
+            40% { clip: rect(64px, 9999px, 98px, 0); }
+            50% { clip: rect(61px, 9999px, 85px, 0); }
+            60% { clip: rect(99px, 9999px, 114px, 0); }
+            70% { clip: rect(34px, 9999px, 115px, 0); }
+            80% { clip: rect(98px, 9999px, 129px, 0); }
+            90% { clip: rect(43px, 9999px, 96px, 0); }
+            100% { clip: rect(82px, 9999px, 64px, 0); }
+        }
+
+        @keyframes glitch-anim2 {
+            0% { clip: rect(65px, 9999px, 119px, 0); }
+            10% { clip: rect(79px, 9999px, 66px, 0); }
+            20% { clip: rect(26px, 9999px, 78px, 0); }
+            30% { clip: rect(75px, 9999px, 107px, 0); }
+            40% { clip: rect(58px, 9999px, 129px, 0); }
+            50% { clip: rect(73px, 9999px, 54px, 0); }
+            60% { clip: rect(105px, 9999px, 138px, 0); }
+            70% { clip: rect(15px, 9999px, 75px, 0); }
+            80% { clip: rect(66px, 9999px, 39px, 0); }
+            90% { clip: rect(129px, 9999px, 137px, 0); }
+            100% { clip: rect(34px, 9999px, 14px, 0); }
+        }
+
+        @keyframes glitch-skew {
+            0% { transform: skew(0deg); }
+            10% { transform: skew(-3deg); }
+            20% { transform: skew(1deg); }
+            30% { transform: skew(-4deg); }
+            40% { transform: skew(2deg); }
+            50% { transform: skew(-1deg); }
+            60% { transform: skew(3deg); }
+            70% { transform: skew(-2deg); }
+            80% { transform: skew(4deg); }
+            90% { transform: skew(-1deg); }
+            100% { transform: skew(0deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-card {
+                margin-bottom: 1.5rem;
+            }
+            
+            .metric {
+                font-size: 1.2rem;
+            }
+            
+            .variation {
+                font-size: 0.7rem;
+            }
+            
+            .filter-header {
+                font-size: 0.9rem;
+            }
+            
+            .neon-tabs .nav-link {
+                padding: 0.75rem;
+                font-size: 0.8rem;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+        }
+        </style>
+        
+        <script>
+        // Inicializar AOS (Animate On Scroll)
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-in-out',
+                once: true,
+                offset: 100
+            });
+            
+            // Inicializar partículas
+            if (typeof particlesJS !== 'undefined') {
+                particlesJS('dashboard-particles', {
+                    "particles": {
+                        "number": {
+                            "value": 60,
+                            "density": {
+                                "enable": true,
+                                "value_area": 800
+                            }
+                        },
+                        "color": {
+                            "value": "#FF6B6B"
+                        },
+                        "shape": {
+                            "type": "circle",
+                            "stroke": {
+                                "width": 0,
+                                "color": "#000000"
+                            }
+                        },
+                        "opacity": {
+                            "value": 0.5,
+                            "random": true,
+                            "anim": {
+                                "enable": false
+                            }
+                        },
+                        "size": {
+                            "value": 3,
+                            "random": true
+                        },
+                        "line_linked": {
+                            "enable": true,
+                            "distance": 150,
+                            "color": "#FF6B6B",
+                            "opacity": 0.4,
+                            "width": 1
+                        },
+                        "move": {
+                            "enable": true,
+                            "speed": 2,
+                            "direction": "none",
+                            "random": false,
+                            "straight": false,
+                            "out_mode": "out",
+                            "bounce": false
+                        }
+                    },
+                    "interactivity": {
+                        "detect_on": "canvas",
+                        "events": {
+                            "onhover": {
+                                "enable": true,
+                                "mode": "grab"
+                            },
+                            "onclick": {
+                                "enable": true,
+                                "mode": "push"
+                            },
+                            "resize": true
+                        },
+                        "modes": {
+                            "grab": {
+                                "distance": 140,
+                                "line_linked": {
+                                    "opacity": 1
+                                }
+                            },
+                            "push": {
+                                "particles_nb": 4
+                            }
+                        }
+                    },
+                    "retina_detect": true
+                });
+            }
+            
+            // Efecto hover en las tarjetas de estadísticas
+            const statsCards = document.querySelectorAll('.stats-card');
+            statsCards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const x = e.pageX - card.getBoundingClientRect().left;
+                    const y = e.pageY - card.getBoundingClientRect().top;
+                    
+                    const centerX = card.offsetWidth / 2;
+                    const centerY = card.offsetHeight / 2;
+                    
+                    const angleX = (centerY - y) / 10;
+                    const angleY = (x - centerX) / 10;
+                    
+                    card.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+                });
+            });
+            
+            // Tema oscuro/claro
+            const themeToggle = document.getElementById('themeToggle');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            let darkMode = localStorage.getItem('darkMode') !== null 
+                ? localStorage.getItem('darkMode') === 'true'
+                : prefersDark;
+            
+            function applyTheme() {
+                if (darkMode) {
+                    document.body.classList.add('dark-mode');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> Modo Claro';
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> Modo Oscuro';
+                }
+            }
+            
+            applyTheme();
+            
+            themeToggle.addEventListener('click', () => {
+                darkMode = !darkMode;
+                localStorage.setItem('darkMode', darkMode);
+                applyTheme();
+            });
+            
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (localStorage.getItem('darkMode') === null) {
+                    darkMode = e.matches;
+                    applyTheme();
+                }
+            });
+        });
+        </script>
+    </div>
+    
+    {% include 'layout/mensajes.html' %}
+</body>
+{% include 'layout/footer_dashboard.html' %}
+</html>

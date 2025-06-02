@@ -1,5 +1,4 @@
 // Variables globales
-const csvUrl = "https://raw.githubusercontent.com/rudyluis/DashboardJS/refs/heads/main/video_games_sales.csv";
 let allData = [];
 let filteredData = [];
 let initialDataLoaded = false;
@@ -46,6 +45,9 @@ const chartColors = {
     return color.replace(/rgba?\(([^)]+)\)/, `rgba($1, ${opacity})`);
   }
 };
+
+// Almacenar instancias de gráficos
+const chartInstances = {};
 
 // Formatear números
 function formatNumber(num, precision = 2) {
@@ -190,7 +192,6 @@ function getChartOptions(type, isDarkMode) {
         }
       };
       
-      
     case 'line':
       return {
         ...baseOptions,
@@ -238,244 +239,15 @@ function getChartOptions(type, isDarkMode) {
       return baseOptions;
   }
 }
-
-// Almacenar instancias de gráficos
-const chartInstances = {};
-
-// Document ready
-$(document).ready(function() {
-  loadData();
-  setupEventListeners();
-  setupThemeToggle();
-  
-  // Cargar preferencia de tema desde localStorage si existe
-  const savedTheme = localStorage.getItem('gamesDashboardTheme');
-  if (savedTheme) {
-    document.documentElement.setAttribute('data-bs-theme', savedTheme);
-    updateThemeToggleUI(savedTheme === 'dark');
-  }
-});
-
-// Cargar datos
-function loadData() {
-  $.ajax({
-    url: csvUrl,
-    dataType: 'text',
-    success: function(data) {
-      const parsed = Papa.parse(data, {header: true});
-      
-      allData = parsed.data
-        .filter(d => d.Name)
-        .map(game => ({
-          ...game,
-          NA_Sales: parseFloat(game.NA_Sales || 0),
-          EU_Sales: parseFloat(game.EU_Sales || 0),
-          JP_Sales: parseFloat(game.JP_Sales || 0),
-          Other_Sales: parseFloat(game.Other_Sales || 0),
-          Global_Sales: parseFloat(game.Global_Sales || 0),
-          Year: game.Year ? String(game.Year).trim() : 'N/A'
-        }));
-      
-      filteredData = [...allData];
-      initialDataLoaded = true;
-      
-      initializeFilters();
-      updateDashboard();
-    },
-    error: function(error) {
-      console.error("Error al cargar datos:", error);
-      alert("Error al cargar los datos. Por favor, inténtelo de nuevo más tarde.");
-    }
-  });
-}
-
-// Configurar escuchadores de eventos
-function setupEventListeners() {
-  $('#filterPlatform, #filterGenre, #filterPublisher, #filterYear').on('change', function() {
-    if (initialDataLoaded) {
-      applyFilters();
-    }
-  });
-  
-  $('#resetFilters').on('click', function() {
-    $('#filterPlatform, #filterGenre, #filterPublisher, #filterYear').val('');
-    if (initialDataLoaded) {
-      applyFilters();
-    }
-  });
-  
-  $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function() {
-    Object.values(chartInstances).forEach(chart => {
-      if (chart) chart.update();
-    });
-  });
-}
-
-// Configurar cambio de tema
-function setupThemeToggle() {
-  $('#toggleTheme').on('click', function() {
-    const html = document.documentElement;
-    const isDark = html.getAttribute('data-bs-theme') === 'dark';
-    const newTheme = isDark ? 'light' : 'dark';
-    
-    // Guardar preferencia en localStorage
-    localStorage.setItem('gamesDashboardTheme', newTheme);
-    
-    html.setAttribute('data-bs-theme', newTheme);
-    updateThemeToggleUI(!isDark);
-    
-    updateCharts(filteredData);
-  });
-}
-
-// Actualizar UI del botón de tema
-function updateThemeToggleUI(isDark) {
-  $('.mode-icon').text(isDark ? '☀️' : '🌙');
-  $('.mode-text').text(isDark ? 'Modo Claro' : 'Modo Oscuro');
-}
-
-// Inicializar filtros
-function initializeFilters() {
-  const $platformSelect = $('#filterPlatform');
-  const $genreSelect = $('#filterGenre');
-  const $publisherSelect = $('#filterPublisher');
-  const $yearSelect = $('#filterYear');
-  
-  const populateSelect = (select, values) => {
-    select.empty().append('<option value="">Todos</option>');
-    values.forEach(value => {
-      select.append($('<option></option>').attr('value', value).text(value));
-    });
-  };
-  
-  const uniquePlatforms = [...new Set(allData.map(d => d.Platform).filter(Boolean))].sort();
-  const uniqueGenres = [...new Set(allData.map(d => d.Genre).filter(Boolean))].sort();
-  const uniquePublishers = [...new Set(allData.map(d => d.Publisher).filter(Boolean))].sort();
-  
-  const uniqueYears = [...new Set(allData.map(d => d.Year).filter(year => year && year !== 'N/A'))]
-    .sort((a, b) => parseInt(a) - parseInt(b));
-  
-  populateSelect($platformSelect, uniquePlatforms);
-  populateSelect($genreSelect, uniqueGenres);
-  populateSelect($publisherSelect, uniquePublishers);
-  populateSelect($yearSelect, uniqueYears);
-}
-
-// Aplicar filtros
-function applyFilters() {
-  const platform = $('#filterPlatform').val();
-  const genre = $('#filterGenre').val();
-  const publisher = $('#filterPublisher').val();
-  const year = $('#filterYear').val();
-  
-  filteredData = allData.filter(game => 
-    (!platform || game.Platform === platform) &&
-    (!genre || game.Genre === genre) &&
-    (!publisher || game.Publisher === publisher) &&
-    (!year || game.Year === year)
-  );
-  
-  updateDashboard();
-}
-
-// Actualizar dashboard
-function updateDashboard() {
-  updateStats();
-  updateCharts(filteredData);
-  updateDataTable(filteredData);
-}
-
-// Actualizar estadísticas
-function updateStats() {
-  $('#totalGames').text(filteredData.length.toLocaleString());
-  
-  const totalSales = filteredData.reduce((sum, game) => sum + game.Global_Sales, 0);
-  $('#totalSales').text(formatNumber(totalSales) + 'M');
-  
-  const platformSales = {};
-  const genreSales = {};
-  const publisherSales = {};
-  
-  filteredData.forEach(game => {
-    platformSales[game.Platform] = (platformSales[game.Platform] || 0) + game.Global_Sales;
-    genreSales[game.Genre] = (genreSales[game.Genre] || 0) + game.Global_Sales;
-    publisherSales[game.Publisher] = (publisherSales[game.Publisher] || 0) + game.Global_Sales;
-  });
-  
-  const topPlatform = Object.entries(platformSales).sort((a, b) => b[1] - a[1])[0];
-  const topGenre = Object.entries(genreSales).sort((a, b) => b[1] - a[1])[0];
-  const topPublisher = Object.entries(publisherSales).sort((a, b) => b[1] - a[1])[0];
-  
-  $('#topPlatform').text(topPlatform ? topPlatform[0] : '-');
-  $('#topGenre').text(topGenre ? topGenre[0] : '-');
-  $('#topPublisher').text(topPublisher ? topPublisher[0] : '-');
-}
-
-// Actualizar tabla de datos
-function updateDataTable(data) {
-  const table = $('#gamesTable').DataTable();
-  if (table) {
-    table.clear().destroy();
-  }
-  
-  $('#gamesTable').DataTable({
-    data: data.map(game => [
-      game.Name,
-      game.Platform,
-      game.Year,
-      game.Genre,
-      game.Publisher,
-      formatNumber(game.NA_Sales, 2),
-      formatNumber(game.EU_Sales, 2),
-      formatNumber(game.JP_Sales, 2),
-      formatNumber(game.Other_Sales, 2),
-      formatNumber(game.Global_Sales, 2)
-    ]),
-    columns: [
-      { title: "Nombre" },
-      { title: "Plataforma" },
-      { title: "Año" },
-      { title: "Género" },
-      { title: "Editorial" },
-      { title: "Ventas NA", className: "text-end" },
-      { title: "Ventas UE", className: "text-end" },
-      { title: "Ventas JP", className: "text-end" },
-      { title: "Otras Ventas", className: "text-end" },
-      { title: "Ventas Globales", className: "text-end" }
-    ],
-    responsive: true,
-    order: [[9, 'desc']],
-    pageLength: 10,
-    lengthMenu: [10, 25, 50, 100],
-    language: {
-      search: "Buscar:",
-      lengthMenu: "Mostrar _MENU_ entradas",
-      info: "Mostrando _START_ a _END_ de _TOTAL_ entradas",
-      infoEmpty: "Mostrando 0 a 0 de 0 entradas",
-      infoFiltered: "(filtrado de _MAX_ entradas totales)",
-      paginate: {
-        first: "Primero",
-        last: "Último",
-        next: "Siguiente",
-        previous: "Anterior"
-      },
-      emptyTable: "No hay datos disponibles",
-      zeroRecords: "No se encontraron coincidencias"
-    }
-  });
-}
-
-// Actualizar todos los gráficos
-function updateCharts(data) {
+function renderGraficos(data) {
   const isDarkMode = document.documentElement.getAttribute('data-bs-theme') === 'dark';
   
-  Object.keys(chartInstances).forEach(id => {
-    if (chartInstances[id]) {
-      chartInstances[id].destroy();
-      chartInstances[id] = null;
-    }
+  // Destruir gráficos existentes
+  Object.values(chartInstances).forEach(chart => {
+    if (chart) chart.destroy();
   });
   
+  // Crear nuevos gráficos
   createRegionSalesBarChart(data, isDarkMode);
   createPublisherPieChart(data, isDarkMode);
   createYearlyTrendChart(data, isDarkMode);
@@ -926,4 +698,275 @@ function createPublisherHorizontalBarChart(data, isDarkMode) {
     },
     options: options
   });
+
+
+
+    
+    // Crear los nuevos gráficos según lo especificado
+    createRegionSalesBarChart(data, isDarkMode);
+    createPublisherPieChart(data, isDarkMode);
+    createYearlyTrendChart(data, isDarkMode);
+    createPlatformBarChart(data, isDarkMode);
+    createPlatformDoughnutChart(data, isDarkMode);
+    createGenreRadarChart(data, isDarkMode);
+    createGenrePieChart(data, isDarkMode);
+    createRegionComparisonChart(data, isDarkMode);
+    createGenrePolarAreaChart(data, isDarkMode);
+    createPublisherHorizontalBarChart(data, isDarkMode);
 }
+
+// Actualizar las tarjetas de estadísticas
+function actualizarStatsCards() {
+    const totalSales = filteredData.reduce((sum, d) => sum + parseFloat(d.Global_Sales || 0), 0);
+    const platformSales = {};
+    const genreSales = {};
+    const yearSales = {};
+
+    filteredData.forEach(d => {
+        platformSales[d.Platform] = (platformSales[d.Platform] || 0) + parseFloat(d.Global_Sales || 0);
+        genreSales[d.Genre] = (genreSales[d.Genre] || 0) + parseFloat(d.Global_Sales || 0);
+        yearSales[d.Year] = (yearSales[d.Year] || 0) + parseFloat(d.Global_Sales || 0);
+    });
+
+    const leadingPlatform = Object.keys(platformSales).reduce((a, b) => platformSales[a] > platformSales[b] ? a : b, 'N/A');
+    const popularGenre = Object.keys(genreSales).reduce((a, b) => genreSales[a] > genreSales[b] ? a : b, 'N/A');
+    const topYear = Object.keys(yearSales).reduce((a, b) => yearSales[a] > yearSales[b] ? a : b, 'N/A');
+
+    $('#totalSales').text(`${formatNumber(totalSales)}M`);
+    $('#totalSalesVar').text(totalSales > 0 ? '↑ Total Ventas' : '—').addClass(totalSales > 0 ? 'positive' : '');
+    $('#leadingPlatform').text(leadingPlatform);
+    $('#popularGenre').text(popularGenre);
+    $('#topYear').text(topYear);
+    $('#topYearVar').text('Año Top');
+}
+
+// Cargar datos en la tabla
+function cargarTabla(data) {
+    const tabla = $('#tablaDatos').DataTable();
+    tabla.clear().destroy();
+
+    const cuerpo = data.map(d => [
+        d.Name,
+        d.Platform,
+        d.Year,
+        d.Genre,
+        d.Publisher,
+        formatNumber(d.NA_Sales, 2),
+        formatNumber(d.EU_Sales, 2),
+        formatNumber(d.JP_Sales, 2),
+        formatNumber(d.Other_Sales, 2),
+        formatNumber(d.Global_Sales, 2)
+    ]);
+
+    $('#tablaDatos').DataTable({
+        data: cuerpo,
+        columns: [
+            { title: "Título" },
+            { title: "Plataforma" },
+            { title: "Año" },
+            { title: "Género" },
+            { title: "Editor" },
+            { title: "Ventas NA", className: "text-end" },
+            { title: "Ventas EU", className: "text-end" },
+            { title: "Ventas JP", className: "text-end" },
+            { title: "Ventas Otros", className: "text-end" },
+            { title: "Ventas Globales", className: "text-end" }
+        ],
+        responsive: true,
+        order: [[9, 'desc']],
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        language: {
+            search: "Buscar:",
+            lengthMenu: "Mostrar _MENU_ entradas",
+            info: "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+            infoEmpty: "Mostrando 0 a 0 de 0 entradas",
+            infoFiltered: "(filtrado de _MAX_ entradas totales)",
+            paginate: {
+                first: "Primero",
+                last: "Último",
+                next: "Siguiente",
+                previous: "Anterior"
+            },
+            emptyTable: "No hay datos disponibles",
+            zeroRecords: "No se encontraron coincidencias"
+        }
+    });
+}
+
+// Aplicar filtros y actualizar gráficos
+function aplicarFiltrosYGraficos() {
+    const plataforma = $('#filterPlataforma').val() || [];
+    const genero = $('#filterGenero').val() || [];
+    const anio = $('#filterAnio').val() || [];
+    const editor = $('#filterEditor').val() || [];
+    const search = $('#searchTitle').val().toLowerCase();
+
+    filteredData = allData.filter(d =>
+        (plataforma.length === 0 || plataforma.includes(d.Platform)) &&
+        (genero.length === 0 || genero.includes(d.Genre)) &&
+        (anio.length === 0 || anio.includes(d.Year)) &&
+        (editor.length === 0 || editor.includes(d.Publisher)) &&
+        (!search || d.Name.toLowerCase().includes(search))
+    );
+
+    cargarTabla(filteredData);
+    actualizarStatsCards();
+    renderGraficos(filteredData);
+}
+
+// Popular los filtros
+function popularFiltros() {
+    const params = {
+        plataforma: $('#filterPlataforma').val() || [],
+        genero: $('#filterGenero').val() || [],
+        anio: $('#filterAnio').val() || [],
+        editor: $('#filterEditor').val() || []
+    };
+
+    $.ajax({
+        url: '/api/filtros',
+        method: 'GET',
+        data: params,
+        traditional: true,  // importante para enviar listas en query string
+        success: function (res) {
+            actualizarCombo('#filterPlataforma', res.plataformas, params.plataforma);
+            actualizarCombo('#filterGenero', res.generos, params.genero);
+            actualizarCombo('#filterAnio', res.anios, params.anio);
+            actualizarCombo('#filterEditor', res.editores, params.editor);
+        },
+        error: function (err) {
+            console.error("Error al cargar filtros:", err);
+        }
+    });
+}
+
+// Actualizar un combo de selección
+function actualizarCombo(id, valores, valoresActuales) {
+    const select = $(id);
+    select.empty();
+    valores.forEach(v => select.append(`<option value="${v}">${v}</option>`));
+    select.val(valoresActuales);
+    select.trigger('change.select2');
+}
+
+// Actualizar el tema del toggle
+function updateThemeToggleUI(isDark) {
+    $('#toggleTheme').text(isDark ? 'Modo Claro ☀️' : 'Modo Oscuro 🌙');
+}
+
+// Inicialización cuando el documento está listo
+$(document).ready(function () {
+    $('#filterPlataforma, #filterGenero, #filterAnio, #filterEditor').select2({
+        placeholder: "Seleccionar...",
+        allowClear: true,
+        width: '100%',
+        closeOnSelect: false,
+        minimumResultsForSearch: 0,
+        tags: false
+    }).on('select2:select', function () {
+        $(this).data('select2').$dropdown.find('.select2-search__field').focus();
+    });
+
+    // Prevención de reapertura al limpiar con la "X"
+    $('#filterPlataforma, #filterGenero, #filterAnio, #filterEditor')
+        .on('select2:unselecting', function (e) {
+            $(this).data('prevent-open', true);
+        })
+        .on('select2:opening', function (e) {
+            if ($(this).data('prevent-open')) {
+                e.preventDefault();  // Evita que se abra
+                $(this).removeData('prevent-open');
+            }
+        });
+
+    // Cargar datos iniciales
+    $.ajax({
+        url: "/api/videogames",
+        method: "GET",
+        dataType: "json",
+        success: function (data) {
+            console.log("Datos recibidos:", data);
+           
+            allData = data.map(game => ({
+                ...game,
+                NA_Sales: parseFloat(game.NA_Sales || 0),
+                EU_Sales: parseFloat(game.EU_Sales || 0),
+                JP_Sales: parseFloat(game.JP_Sales || 0),
+                Other_Sales: parseFloat(game.Other_Sales || 0),
+                Global_Sales: parseFloat(game.Global_Sales || 0),
+                Year: game.Year ? String(game.Year).trim() : 'N/A'
+            }));
+            
+            filteredData = [...allData];
+            initialDataLoaded = true;
+            
+            popularFiltros();
+            actualizarStatsCards();
+            aplicarFiltrosYGraficos();
+        },
+        error: function (xhr, status, error) {
+            console.error("Error al cargar los datos:", error);
+        }
+    });
+
+    // Event listeners
+    $('#filterPlataforma, #filterGenero, #filterAnio, #filterEditor').on('change', function () {
+        aplicarFiltrosYGraficos();
+    });
+
+    $('#searchTitle').on('input', function () {
+        aplicarFiltrosYGraficos();
+    });
+
+    $('.period-btn').on('click', function () {
+        $('.period-btn').removeClass('active');
+        $(this).addClass('active');
+        renderGraficos(filteredData);
+    });
+
+    // Configurar cambio de tema
+    $('#toggleTheme').on('click', function() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-bs-theme') === 'dark';
+        const newTheme = isDark ? 'light' : 'dark';
+        
+        // Guardar preferencia en localStorage
+        localStorage.setItem('gamesDashboardTheme', newTheme);
+        
+        html.setAttribute('data-bs-theme', newTheme);
+        updateThemeToggleUI(!isDark);
+        
+        aplicarFiltrosYGraficos();
+    });
+
+    // Cargar preferencia de tema desde localStorage si existe
+    const savedTheme = localStorage.getItem('gamesDashboardTheme');
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        updateThemeToggleUI(savedTheme === 'dark');
+    }
+});
+
+// Función para verificar si los gráficos se están creando
+function verifyChartsCreation() {
+  console.log("Verificando creación de gráficos...");
+  
+  Object.keys(chartInstances).forEach(chartId => {
+    const canvas = document.getElementById(chartId);
+    if (!canvas) {
+      console.error(`Canvas no encontrado: ${chartId}`);
+    } else {
+      console.log(`Canvas encontrado: ${chartId}`, canvas);
+    }
+    
+    if (chartInstances[chartId]) {
+      console.log(`Gráfico ${chartId} creado:`, chartInstances[chartId]);
+    } else {
+      console.error(`Gráfico ${chartId} NO creado`);
+    }
+  });
+}
+
+// Llama a esta función después de crear los gráficos
+setTimeout(verifyChartsCreation, 2000);

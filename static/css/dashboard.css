@@ -1,35 +1,75 @@
 /* Variables */
 :root {
   --primary-color: #FF6B6B;
-  --primary-color-light: #FF8787;
-  --primary-color-dark: #FA5252;
+  --primary-light: #FF8787;
+  --primary-dark: #FA5252;
   --secondary-color: #4ECDC4;
   --accent-color: #FFE66D;
-  --success-color: #95E1D3;
-  --warning-color: #FCE38A;
-  --danger-color: #F38181;
-  --light-bg: #FFFFFF;
-  --light-card: #F8F9FA;
-  --dark-bg: #111827;
-  --dark-card: #1F2937;
-  --border-radius: 0.75rem;
-  --transition-speed: 0.3s;
-  --retro-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+  --light-card: #FFFFFF;
+  --dark-card: #1a1a1a;
+  --text-dark: #212529;
+  --text-light: #f8f9fa;
+  --neon-shadow: 0 0 10px rgba(255, 107, 107, 0.7);
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* General Styles */
+/* Fondo principal */
 body {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.9rem;
-  background-color: var(--light-bg);
-  color: #333;
+  background: 
+    url('https://i.pinimg.com/originals/7d/68/ab/7d68abd537942d95ac5b2cbb53ed3cf0.gif') center center fixed;
+  background-size: cover;
+  color: var(--text-dark);
   margin: 0;
   padding: 0;
-  transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  transition: var(--transition);
 }
+
+/* Modo oscuro - versión simplificada y efectiva */
+/* Modo oscuro simplificado y corregido */
+body.dark-mode {
+  background: 
+    url('https://i.pinimg.com/originals/76/cc/71/76cc71fb45866a23a21ba5124743da4e.gif') center center fixed,
+    linear-gradient(rgba(30, 30, 30, 0.7), rgba(30, 30, 30, 0.7)) !important;
+  background-size: cover !important;
+  color: var(--text-light);
+}
+
+/* Elimina cualquier fondo adicional que pueda estar encima del GIF */
+body.dark-mode .bg-body-secondary {
+  background-color: transparent !important;
+}
+
+/* Asegura que los elementos transparentes no oculten el fondo */
+body.dark-mode .neon-card,
+body.dark-mode .stats-card,
+body.dark-mode .filter-section,
+body.dark-mode .data-table-section,
+body.dark-mode .chart-container {
+  background-color: rgba(30, 30, 30, 0.85) !important;
+  backdrop-filter: blur(2px);
+}
+
+/* Tarjetas de estadísticas */
+.stats-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  box-shadow: 0 4px 15px rgba(201, 201, 201, 0.2);
+  color: var(--text-dark);
+}
+
+body.dark-mode .stats-card {
+  background: rgba(255, 255, 255, 0) !important;
+  color: var(--text-light);
+}
+
 
 html {
   overflow-y: scroll;
@@ -47,6 +87,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Dark Mode */
+
+
 [data-bs-theme="dark"] {
   --bs-body-bg: var(--dark-bg);
   --bs-body-color: #F3F4F6;
