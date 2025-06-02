@@ -1,22 +1,25 @@
-<nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<nav id="mainNavbar" class="navbar navbar-expand-lg sticky-top shadow-sm">
     <div class="container-fluid justify-content-between">
-        <h1 class="navbar-brand mb-0 h3"><i class="fas fa-gamepad me-2"></i>Dashboard de Videojuegos</h1>
+              <h1 class="navbar-brand mb-0">
+        <span class="logo-icon">📊</span> 
+        <span class="brand-text">Dashboard de Ventas</span>
+      </h1>
         <div class="d-flex align-items-center">
-            <input type="text" id="searchTitle" class="form-control me-2" placeholder="Buscar título..."
-                style="max-width: 200px;">
+            <input type="text" id="searchTitle" class="form-control me-2" placeholder="Buscar datos..." style="max-width: 200px; border-radius: 8px;">
             <button id="toggleTheme" class="btn btn-outline-dark">Modo Oscuro 🌙</button>
             <a href="{{ url_for('dashboard')}}" class="btn btn-outline-warning btn-sm ms-2">
                 <i class="fa-solid fa-tachograph-digital"></i>
-
             </a>
             <a href="{{ url_for('listgames')}}" class="btn btn-outline-success btn-sm ms-2">
                 <i class="fa-solid fa-notes-medical"></i>
-
             </a>
             <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm ms-2">
-                <i class="fas fa-power-off"></i> <!-- Icono de apagado -->
+                <i class="fas fa-power-off"></i>
             </a>
-
         </div>
     </div>
 </nav>
+
+
+
