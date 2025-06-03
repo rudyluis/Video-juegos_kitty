@@ -1,19 +1,13 @@
 {% include 'layout/header_dashboard.html' %}
-
+{% include 'layout/nav.html' %}
+    
 <body class="bg-body-primary">
-    {% include 'layout/nav.html' %}
-    
-    <!-- Botón de tema oscuro -->
-    <div class="position-absolute top-0 end-0 mt-3 me-3">
-        <button id="themeToggle" class="btn btn-sm btn-outline-secondary">
-            <i class="fas fa-moon"></i> Modo Oscuro
-        </button>
-    </div>
-    
+    <!-- Fondos primero -->
+    <div class="light-mode-bg" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1000; background: url('https://i.pinimg.com/originals/7d/68/ab/7d68abd537942d95ac5b2cbb53ed3cf0.gif') center/cover no-repeat; opacity: 1; transition: opacity 0.5s ease;"></div>
+    <div class="dark-mode-bg" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1000; background: url('https://i.pinimg.com/originals/76/cc/71/76cc71fb45866a23a21ba5124743da4e.gif') center/cover no-repeat; opacity: 0; transition: opacity 0.5s ease;"></div>
+
     <div class="container-fluid bg-body-secondary">
-        <!-- Efecto de partículas -->
-        <div id="dashboard-particles"></div>
-        
+      
             <!-- Tabla de datos -->
             {% include 'layout/modalAgregar.html' %}
             {% include 'layout/modalEditar.html' %}
@@ -50,351 +44,110 @@
         <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
         <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
         
-        <!-- Estilos personalizados -->
-        <style>
-        :root {
-            --primary-color: #FF6B6B;
-            --primary-light: #FF8787;
-            --primary-dark: #FA5252;
-            --secondary-color: #4ECDC4;
-            --accent-color: #FFE66D;
-            --light-card: #FFFFFF;
-            --dark-card: #1e1e1e;
-            --text-dark: #212529;
-            --text-light: #f8f9fa;
-            --neon-shadow: 0 0 10px rgba(255, 107, 107, 0.7);
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
-        /* Fondo principal */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: url('https://i.pinimg.com/originals/7d/68/ab/7d68abd537942d95ac5b2cbb53ed3cf0.gif') center center fixed;
-            background-size: cover;
-            color: var(--text-dark);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            transition: var(--transition);
-        }
-
-        /* Modo oscuro */
-        body.dark-mode {
-            background: url('https://i.pinimg.com/originals/76/cc/71/76cc71fb45866a23a21ba5124743da4e.gif') center center fixed;
-            background-size: cover;
-            color: var(--text-light);
-        }
-
-        body.dark-mode .bg-body-secondary {
-            background-color: transparent !important;
-        }
-
-        body.dark-mode .neon-card,
-        body.dark-mode .stats-card,
-        body.dark-mode .filter-section,
-        body.dark-mode .chart-container {
-            background-color: rgba(255, 255, 255, 0) !important;
-            backdrop-filter: blur(5px);
-        }
-
-        .dashboard-container {
-            position: relative;
-            z-index: 1;
-            padding-top: 20px;
-        }
-
-        /* Tarjetas de estadísticas */
-        .stats-row {
-            margin-top: 1rem;
-        }
-
-        .stats-card {
-            background: rgba(255, 255, 255, 0) !important;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition);
-            border: 1px solid rgba(255, 107, 107, 0.3);
-            box-shadow: 0 4px 15px rgba(201, 201, 201, 0.2);
-            color: var(--text-dark);
-        }
-
-        body.dark-mode .stats-card {
-            background: rgba(255, 255, 255, 0) !important;
-            color: var(--text-light);
-        }
-
-        .neon-stats {
-            animation: neonGlow 2s infinite alternate;
-        }
-
-        @keyframes neonGlow {
-            from {
-                box-shadow: 0 0 5px rgba(255, 107, 107, 0.5),
-                            0 0 10px rgba(255, 107, 107, 0.3);
-            }
-            to {
-                box-shadow: 0 0 15px rgba(255, 107, 107, 0.7),
-                            0 0 30px rgba(255, 107, 107, 0.5);
-            }
-        }
-
-        .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
-        }
-
-        .stats-icon {
-            font-size: 2rem;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-            text-shadow: 0 0 10px var(--primary-light);
-            animation: pulse 2s infinite;
-        }
-
-        .stats-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .metric {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--accent-color);
-            margin-bottom: 0.5rem;
-            text-shadow: 0 0 5px rgba(255, 230, 109, 0.5);
-        }
-
-        .variation {
-            font-size: 0.9rem;
-            color: var(--text-dark);
-            opacity: 0.8;
-            display: block;
-        }
-
-        body.dark-mode .variation {
-            color: var(--text-light);
-        }
-
-        .stats-wave {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 50%;
-            background: linear-gradient(to top, rgba(255, 255, 255, 0), transparent);
-            z-index: 1;
-            clip-path: polygon(0 40%, 100% 20%, 100% 100%, 0% 100%);
-            opacity: 0.5;
-            transition: var(--transition);
-        }
-
-.table-responsive {
-    background: rgba(255, 255, 255, 0);
-    border-radius: 1rem;
-    overflow-x: auto; /* Cambiado de 'hidden' a 'auto' */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    max-width: 100%;
-}
-
-
-/* Para el modo oscuro */
-body.dark-mode .table-responsive {
-    background: rgba(31, 41, 55, 0);
-}
-
-        .table {
-            margin-bottom: 0;
-            color: var(--text-dark);
-        }
-
-        body.dark-mode .table {
-            color: var(--text-light);
-        }
-
-        .table thead th {
-            background-color: rgba(255, 107, 107, 0);
-            border-bottom: 2px solid var(--primary-color);
-            color: var(--accent-color);
-        }
-
-        .table tbody tr:hover {
-            background-color: rgba(255, 107, 107, 0) !important;
-        }
-
-        /* Botones de acción */
-        .btn-action {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.875rem;
-            margin: 0 2px;
-        }
-
-        /* Animaciones */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .stats-card {
-                margin-bottom: 1.5rem;
-            }
-            
-            .metric {
-                font-size: 1.2rem;
-            }
-            
-            .variation {
-                font-size: 0.7rem;
-            }
-        }
-        </style>
         
         <script>
-        // Inicializar AOS (Animate On Scroll)
-        document.addEventListener('DOMContentLoaded', function() {
-            AOS.init({
-                duration: 800,
-                easing: 'ease-in-out',
-                once: true,
-                offset: 100
-            });
-            
-            // Inicializar partículas
-            if (typeof particlesJS !== 'undefined') {
-                particlesJS('dashboard-particles', {
-                    "particles": {
-                        "number": {
-                            "value": 60,
-                            "density": {
-                                "enable": true,
-                                "value_area": 800
-                            }
-                        },
-                        "color": {
-                            "value": "#FF6B6B"
-                        },
-                        "shape": {
-                            "type": "circle",
-                            "stroke": {
-                                "width": 0,
-                                "color": "#000000"
-                            }
-                        },
-                        "opacity": {
-                            "value": 0.5,
-                            "random": true,
-                            "anim": {
-                                "enable": false
-                            }
-                        },
-                        "size": {
-                            "value": 3,
-                            "random": true
-                        },
-                        "line_linked": {
-                            "enable": true,
-                            "distance": 150,
-                            "color": "#FF6B6B",
-                            "opacity": 0.4,
-                            "width": 1
-                        },
-                        "move": {
-                            "enable": true,
-                            "speed": 2,
-                            "direction": "none",
-                            "random": false,
-                            "straight": false,
-                            "out_mode": "out",
-                            "bounce": false
+
+            // Theme toggle function
+function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    updateTheme();
+    updateThemeButton(); // Nueva función para actualizar el texto del botón
+}
+
+// Theme update function
+function updateTheme() {
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    const lightBg = document.querySelector('.light-mode-bg');
+    const darkBg = document.querySelector('.dark-mode-bg');
+    
+    if (isDarkMode) {
+        darkBg.style.opacity = '1';
+        lightBg.style.opacity = '0';
+    } else {
+        lightBg.style.opacity = '1';
+        darkBg.style.opacity = '0';
+    }
+}
+
+// Nueva función para actualizar el botón
+function updateThemeButton() {
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    const themeButton = document.getElementById('toggleTheme');
+    const icon = themeButton.querySelector('i');
+    
+    if (isDarkMode) {
+        themeButton.className = 'btn btn-outline-light';
+        icon.className = 'fas fa-sun';
+        themeButton.innerHTML = '<i class="fas fa-sun"></i> Modo Claro';
+    } else {
+        themeButton.className = 'btn btn-outline-dark';
+        icon.className = 'fas fa-moon';
+        themeButton.innerHTML = '<i class="fas fa-moon"></i> Modo Oscuro';
+    }
+}
+
+// Al cargar la página, verificar el tema inicial
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si hay una preferencia guardada
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+        AOS.init();
+    initParticles();
+    loadDataAndCharts();
+    updateTheme();
+    updateThemeButton();
+
+                // Observe theme changes
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.attributeName === 'class') {
+                            updateTheme();
                         }
-                    },
-                    "interactivity": {
-                        "detect_on": "canvas",
-                        "events": {
-                            "onhover": {
-                                "enable": true,
-                                "mode": "grab"
-                            },
-                            "onclick": {
-                                "enable": true,
-                                "mode": "push"
-                            },
-                            "resize": true
-                        },
-                        "modes": {
-                            "grab": {
-                                "distance": 140,
-                                "line_linked": {
-                                    "opacity": 1
-                                }
-                            },
-                            "push": {
-                                "particles_nb": 4
-                            }
-                        }
-                    },
-                    "retina_detect": true
-                });
-            }
-            
-            // Efecto hover en las tarjetas de estadísticas
-            const statsCards = document.querySelectorAll('.stats-card');
-            statsCards.forEach(card => {
-                card.addEventListener('mousemove', (e) => {
-                    const x = e.pageX - card.getBoundingClientRect().left;
-                    const y = e.pageY - card.getBoundingClientRect().top;
-                    
-                    const centerX = card.offsetWidth / 2;
-                    const centerY = card.offsetHeight / 2;
-                    
-                    const angleX = (centerY - y) / 10;
-                    const angleY = (x - centerX) / 10;
-                    
-                    card.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+                    });
                 });
                 
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+                observer.observe(document.body, {
+                    attributes: true,
+                    attributeFilter: ['class']
                 });
+                
+                // Stats cards hover effect
+                const statsCards = document.querySelectorAll('.stats-card');
+                statsCards.forEach(card => {
+                    card.addEventListener('mousemove', (e) => {
+                        const x = e.pageX - card.getBoundingClientRect().left;
+                        const y = e.pageY - card.getBoundingClientRect().top;
+                        
+                        const centerX = card.offsetWidth / 2;
+                        const centerY = card.offsetHeight / 2;
+                        
+                        const angleX = (centerY - y) / 10;
+                        const angleY = (x - centerX) / 10;
+                        
+                        card.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+                    });
+                    
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+                    });
+                });
+                
+
             });
-            
-            // Tema oscuro/claro
-            const themeToggle = document.getElementById('themeToggle');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            let darkMode = localStorage.getItem('darkMode') !== null 
-                ? localStorage.getItem('darkMode') === 'true'
-                : prefersDark;
-            
-            function applyTheme() {
-                if (darkMode) {
-                    document.body.classList.add('dark-mode');
-                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> Modo Claro';
-                } else {
-                    document.body.classList.remove('dark-mode');
-                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> Modo Oscuro';
-                }
-            }
-            
-            applyTheme();
-            
-            themeToggle.addEventListener('click', () => {
-                darkMode = !darkMode;
-                localStorage.setItem('darkMode', darkMode);
-                applyTheme();
-            });
-            
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                if (localStorage.getItem('darkMode') === null) {
-                    darkMode = e.matches;
-                    applyTheme();
-                }
-            });
-        });
+            // Modificar la función toggleTheme para guardar la preferencia
+function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    
+    // Guardar la preferencia
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    
+    updateTheme();
+    updateThemeButton();
+}
+
         </script>
     </div>
     

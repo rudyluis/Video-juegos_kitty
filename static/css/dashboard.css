@@ -12,12 +12,10 @@
     --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Fondo principal con fallback */
+/* Fondo principal */
 body {
     font-family: 'Press Start 2P', cursive;
-    background: 
-        url('https://i.pinimg.com/originals/7d/68/ab/7d68abd537942d95ac5b2cbb53ed3cf0.gif') center center fixed;
-    background-size: cover;
+    background: linear-gradient(135deg, #fafafa00 0%, #16213e00 100%);
     color: var(--text-light);
     margin: 0;
     padding: 0;
@@ -25,22 +23,18 @@ body {
     transition: var(--transition);
 }
 
+.dashboard-container {
+    min-height: 100vh;
+    background-color: rgba(0, 0, 0, 0); /* Opcional: para mejor legibilidad */
+}
+
 /* Modo oscuro */
 body.dark-mode {
-    background: 
-       url('https://i.pinimg.com/originals/76/cc/71/76cc71fb45866a23a21ba5124743da4e.gif') center center fixed;
-    background-size: cover;
+    background: linear-gradient(135deg, #0f0c2900 0%, #302b63 50%, #24243e 100%);
     color: var(--text-light);
 }
 
-/* Contenedor principal */
-.dashboard-container {
-    position: relative;
-    z-index: 1;
-    padding: 20px;
-}
-
-/* Tarjetas de estadísticas */
+/* Resto del CSS permanece igual... */
 .stats-row {
     margin-top: 2rem;
 }
@@ -57,6 +51,8 @@ body.dark-mode {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     color: var(--text-light);
 }
+
+/* ... (todo el resto del CSS se mantiene igual) ... */
 
 body:not(.dark-mode) .stats-card {
     background: rgba(255, 255, 255, 0) !important;

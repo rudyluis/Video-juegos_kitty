@@ -7,7 +7,10 @@
       </h1>
         <div class="d-flex align-items-center">
             <input type="text" id="searchTitle" class="form-control me-2" placeholder="Buscar datos..." style="max-width: 200px; border-radius: 8px;">
-            <button id="toggleTheme" class="btn btn-outline-dark">Modo Oscuro 🌙</button>
+<button id="toggleTheme" class="btn btn-outline-dark" onclick="toggleTheme()">
+    <i class="fas fa-moon"></i> Modo Oscuro 🌙
+</button>
+
             <a href="{{ url_for('dashboard')}}" class="btn btn-outline-warning btn-sm ms-2">
                 <i class="fa-solid fa-tachograph-digital"></i>
             </a>
