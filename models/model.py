@@ -7,7 +7,7 @@ Base= declarative_base()
 
 
 class VideoGameSale(Base):
-    __tablename__ = 'videogame_sales'
+    __tablename__ = 'video_game_sales'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     rank = Column(Integer, nullable=False)
