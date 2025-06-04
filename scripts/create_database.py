@@ -14,5 +14,3 @@ except ProgrammingError:
     print(f"La base de datos '{dbname}' ya existe o hay un error.")
 finally:
     conn.close()
-
-

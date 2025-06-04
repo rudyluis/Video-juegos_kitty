@@ -6,7 +6,6 @@ from flask_login import UserMixin
 Base= declarative_base()
 
 
-
 class VideoGameSale(Base):
     __tablename__ = 'videogame_sales'
 
